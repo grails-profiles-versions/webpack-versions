@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.moowork.gradle:gradle-node-plugin:0.13"
+        classpath "com.moowork.gradle:gradle-node-plugin:1.1.1"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.1"
         classpath "org.grails.plugins:views-gradle:1.1.6"
@@ -68,20 +68,23 @@ bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
     addResources = true
 }
-
-/* webpack profile */
-
 node {
-    version = '6.9.1'
+    version = '7.10.0'
+    yarnVersion = '0.21.3'
+    distBaseUrl = 'https://nodejs.org/dist'
     download = true
 }
 
-task bundle {
-    dependsOn(['npmInstall', 'npm_run_bundle'])
+task bundle(type: YarnTask, dependsOn: 'yarn') {
+    group = 'build'
+    description = 'Build the client bundle'
+    args = ['run', 'bundle']
 }
 
-task webpack {
-    dependsOn(['npmInstall', 'npm_run_webpack'])
+task webpack(type: YarnTask, dependsOn: 'yarn') {
+    group = 'application'
+    description = 'Build the client bundle in watch mode'
+    args = ['run', 'start']
 }
 
 bootRun.dependsOn(['bundle'])
